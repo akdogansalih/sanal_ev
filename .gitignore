@@ -1,0 +1,9 @@
+node_modules/
+dist/
+shots/
+__pycache__/
+*.pyc
+# Meshy'den inen ham GLB'ler (yüzlerce MB). Sadece küçültülmüş sürümler src/models/ içinde durur.
+originals/
+work/
+.DS_Store

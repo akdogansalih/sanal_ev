@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sanal salon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>@@STYLE@@</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <div id="loading">Oda hazırlanıyor…</div>
+  </div>
+  <header class="plate"><h1>Sanal salon</h1><p>396 × 620 cm, tavan 262 cm</p></header>
+  <nav class="views" id="views" aria-label="Bakış açıları"></nav>
+  <div id="objbar" hidden>
+    <span id="ob-name"></span><small>sürükleyerek taşı</small>
+    <button class="btn" data-rot="-90" aria-label="Sola 90 derece çevir">↺ 90°</button>
+    <button class="btn" data-rot="90" aria-label="Sağa 90 derece çevir">↻ 90°</button>
+    <button class="btn primary" id="ob-done">Bitti</button>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <aside id="sheet">
+    <button class="handle" id="handle" aria-label="Paneli küçült veya büyüt"><i></i></button>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="renk">Renk</button>
+      <button role="tab" aria-selected="false" data-tab="isik">Işık</button>
+      <button role="tab" aria-selected="false" data-tab="esya">Eşyalar</button>
+      <button role="tab" aria-selected="false" data-tab="olcu">Ölçüler</button>
+    </div>
+    <div class="panes">
+      <section class="pane" id="pane-renk">
+        <h3>Hazır kombinasyonlar</h3>
+        <div class="scroller" id="presets"></div>
+        <div class="meter" id="meter">
+          <div class="top"><span>Duvarların ışık yansıtması</span><strong id="m-val">%0</strong></div>
+          <div class="bar"><i id="m-bar"></i><b id="m-base" title="Şu anki hal"></b></div>
+          <p id="m-note"></p>
+        </div>
+        <h3>Boyanacak yüzey</h3>
+        <div class="walls" id="walls"></div>
+        <p class="hint">Odada bir duvara dokunarak da seçebilirsin. Kapıya dokununca açılır.</p>
+        <div id="wall-ctrl" class="ctrl"></div>
+        <input class="search" id="q" type="search" placeholder="Renk adı veya Cİ kodu ara" aria-label="Renk ara">
+        <div id="palette"></div>
+        <h3>Kendi rengini ekle</h3>
+        <div class="row">
+          <button class="btn" id="open-photo">Kartela fotoğrafından al</button>
+          <button class="btn" id="open-add">Kodu ve tonu elle gir</button>
+        </div>
+        <div class="inline-add" id="inline-add" hidden>
+          <input type="color" id="ia-hex" value="#e6e0d3" aria-label="Ton">
+          <input type="text" id="ia-name" placeholder="Renk adı">
+          <input type="text" id="ia-code" placeholder="Cİ kodu">
+          <button class="btn primary" id="ia-add">Ekle</button>
+        </div>
+        <p class="hint">Polisan adları ve Cİ kodları gerçek. Ekrandaki tonların çoğu tahmini, ≈ işaretli olanlar bu yüzden. Sadece Yalın Beyaz ve Sabah Sisi satıcı sayfalarındaki RGB değerinden. Elindeki kartelanın fotoğrafından aldığın ton daha güvenilir olur.</p>
+      </section>
+
+      <section class="pane" id="pane-isik" hidden>
+        <h3>Işık durumu</h3>
+        <div class="seg" id="light-seg"></div>
+        <div class="ctrl">
+          <label class="rng">Pozlama <input type="range" id="exposure" min="0.6" max="1.7" step="0.05"><output id="exposure-o"></output></label>
+        </div>
+        <h3>Perdeler</h3>
+        <div class="seg" id="curtain-seg"></div>
+        <div class="ctrl"><label class="check"><input type="checkbox" id="tv-on"> TV açık</label></div>
+        <p class="hint">Gündüz modlarında ışık iki pencereden gelir. Duvarlar açık renk oldukça odaya yansıyan ışık artar; bu etki seçtiğin renklerin yansıtma değerinden yaklaşık olarak hesaplanıyor. Akşam modunda kartonpiyerdeki spotlar yanar.</p>
+      </section>
+
+      <section class="pane" id="pane-esya" hidden>
+        <p class="hint">Bir eşyaya dokun; seçili eşyayı parmağınla ya da fareyle zeminde sürükleyerek taşı. Bunlar yer tutucu; Meshy modellerin geldikçe yerlerini alacak.</p>
+        <ul class="items" id="items"></ul>
+        <div class="selpanel" id="selpanel" hidden>
+          <strong id="sp-name"></strong>
+          <label class="rng" style="display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center">Yön <input type="range" id="sp-rot" min="0" max="355" step="5"><output id="sp-rot-o"></output></label>
+          <div class="num" id="sp-h-wrap"><span>Gerçek yüksekliği</span><input type="number" id="sp-h" min="5" max="260" step="1" inputmode="numeric"> cm</div>
+          <div class="row">
+            <button class="btn" id="sp-hide">Gizle</button>
+            <button class="btn" id="sp-del" hidden>Modeli sil</button>
+            <button class="btn" id="sp-deselect">Seçimi bırak</button>
+          </div>
+        </div>
+        <h3>Meshy modeli ekle</h3>
+        <div class="row">
+          <label class="btn file primary">Model ekle (.glb)<input type="file" id="glb" accept=".glb,model/gltf-binary"></label>
+          <button class="btn" id="reset-layout">Yerleşimi sıfırla</button>
+        </div>
+        <p class="hint">Meshy’den GLB olarak indir. Model odanın ortasına gelir; sonra gerçek yüksekliğini cm olarak gir ve yerine sürükle. Eklediğin modeller bu tarayıcıda saklanır.</p>
+      </section>
+
+      <section class="pane" id="pane-olcu" hidden>
+        <h3>Kroki</h3>
+        <p class="hint">Yukarıdan bakış, 1 cm = 0,8 piksel. Plandaki kutuların hepsi cm cinsinden ve değiştirilebilir; yazdıkça plan güncellenir. Bitince “Odayı yeniden çiz”e bas.</p>
+        <div class="form" id="dim-form">
+          <div id="plan-wrap"></div>
+          <h3>Yükseklikler</h3>
+          <label>Tavan yüksekliği <input type="number" data-k="ceil" min="230" max="320"></label>
+          <label>Pencerelerin üst kenarı <input type="number" data-k="winTop" min="150" max="300"></label>
+          <label>Koltuk arkası pencere denizlik yüksekliği <input type="number" data-k="leftWin.sill" min="0" max="160"></label>
+          <label>Büyük cam alt kenar yüksekliği <input type="number" data-k="bigWin.sill" min="0" max="160"></label>
+          <label>Kapı yüksekliği <input type="number" data-k="door.h" min="180" max="240"></label>
+          <div class="row"><button class="btn primary" id="dim-apply">Odayı yeniden çiz</button><button class="btn" id="dim-reset">Tahminlere dön</button></div>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <dialog id="photo">
+    <div class="dlg">
+      <h2>Kartela fotoğrafından renk al</h2>
+      <p class="hint" style="margin:0">Kartelayı gün ışığında, flaşsız çek; yanına beyaz bir A4 kâğıt koy. Önce kâğıda dokunursan fotoğrafın renk sıcaklığı düzeltilir, sonra renk kartına dokun.</p>
+      <label class="btn file">Fotoğraf seç<input type="file" id="ph-file" accept="image/*"></label>
+      <div class="seg" id="ph-mode"><button aria-pressed="false" data-m="white">1. Beyaz kâğıt</button><button aria-pressed="true" data-m="color">2. Renk kartı</button></div>
+      <canvas id="ph-canvas" width="10" height="10" hidden></canvas>
+      <div class="pick"><span class="swb" id="ph-sw"></span><div><b id="ph-hex">Henüz renk seçilmedi</b><div class="info" id="ph-wb">Beyaz düzeltmesi yok</div></div></div>
+      <div class="addform"><input type="text" id="ph-name" placeholder="Renk adı"><input type="text" id="ph-code" placeholder="Cİ kodu"></div>
+      <div class="row" style="justify-content:flex-end"><button class="btn" id="ph-close">Kapat</button><button class="btn primary" id="ph-add" disabled>Ekle ve uygula</button></div>
+    </div>
+  </dialog>
+</div>
+
+@@MODELS@@<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lights/RectAreaLightUniformsLib.js"></script>
+<script>@@SCRIPT@@</script>
+</body>
+</html>

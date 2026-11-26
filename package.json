@@ -1,0 +1,17 @@
+{
+  "name": "sanal-salon",
+  "private": true,
+  "description": "Evin 3D sanal kopyası (Sanal Salon)",
+  "scripts": {
+    "build": "python3 build.py",
+    "build:dev": "python3 build.py --local-three"
+  },
+  "devDependencies": {
+    "three": "0.128.0",
+    "@gltf-transform/core": "^4.0.0",
+    "@gltf-transform/extensions": "^4.0.0",
+    "@gltf-transform/functions": "^4.0.0",
+    "meshoptimizer": "^1.0.0",
+    "sharp": "^0.33.0"
+  }
+}

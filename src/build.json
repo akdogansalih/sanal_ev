@@ -1,0 +1,27 @@
+{
+ "order": [
+  "kulube",
+  "hava",
+  "saat"
+ ],
+ "js": [
+  "01-temel.js",
+  "01b-boya-verisi-BOYA.js",
+  "02-durum.js",
+  "03-yardimcilar.js",
+  "04-renderer.js",
+  "05-dokular.js",
+  "06-malzemeler.js",
+  "07-geometri.js",
+  "08-isiklar.js",
+  "09-renk-uygulama-BOYA.js",
+  "10-esyalar.js",
+  "11-glb-iceaktarma.js",
+  "12-gomulu-modeller.js",
+  "13-secim-surukleme.js",
+  "14-kamera.js",
+  "15-arayuz.js",
+  "16-dongu.js",
+  "17-baslat.js"
+ ]
+}
